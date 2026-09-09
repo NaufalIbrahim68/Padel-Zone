@@ -1,6 +1,38 @@
 <?php
 
 // ============================================
+// Serve static files from public/ directly
+// ============================================
+$uri = urldecode(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH));
+$publicFile = dirname(__DIR__) . '/public' . $uri;
+
+if ($uri !== '/' && !empty($uri) && file_exists($publicFile) && !is_dir($publicFile)) {
+    $mimeTypes = [
+        'css'   => 'text/css; charset=utf-8',
+        'js'    => 'application/javascript; charset=utf-8',
+        'mjs'   => 'application/javascript; charset=utf-8',
+        'json'  => 'application/json; charset=utf-8',
+        'svg'   => 'image/svg+xml',
+        'png'   => 'image/png',
+        'jpg'   => 'image/jpeg',
+        'jpeg'  => 'image/jpeg',
+        'gif'   => 'image/gif',
+        'webp'  => 'image/webp',
+        'ico'   => 'image/x-icon',
+        'woff'  => 'font/woff',
+        'woff2' => 'font/woff2',
+        'ttf'   => 'font/ttf',
+    ];
+    $ext = strtolower(pathinfo($publicFile, PATHINFO_EXTENSION));
+    $contentType = $mimeTypes[$ext] ?? 'application/octet-stream';
+    header("Content-Type: $contentType");
+    header("Access-Control-Allow-Origin: *");
+    header("Cache-Control: public, max-age=31536000, immutable");
+    readfile($publicFile);
+    exit;
+}
+
+// ============================================
 // Vercel Serverless Bootstrap
 // ============================================
 // Vercel's filesystem is read-only except /tmp.
