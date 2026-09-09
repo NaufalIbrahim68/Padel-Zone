@@ -12,6 +12,7 @@
         { "src": "/(.*)", "dest": "/api/index.php" }
     ],
     "env": {
+        "APP_KEY": "base64:pl+WkByNgSxFYyoMpxW85tRh7aF5dooaAA8bQgYADM4=",
         "APP_ENV": "production",
         "APP_DEBUG": "true",
         "APP_CONFIG_CACHE": "/tmp/config.php",
