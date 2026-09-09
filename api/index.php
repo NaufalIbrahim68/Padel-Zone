@@ -32,5 +32,17 @@ $_SERVER['APP_STORAGE'] = $storagePath;
 $_ENV['APP_STORAGE'] = $storagePath;
 putenv("APP_STORAGE=$storagePath");
 
+// Copy bundled CA certificate to /tmp for MySQL SSL
+$bundledCa = dirname(__DIR__) . '/database/certs/ca.pem';
+$tmpCa = '/tmp/ca.pem';
+if (file_exists($bundledCa) && !file_exists($tmpCa)) {
+    copy($bundledCa, $tmpCa);
+}
+if (file_exists($tmpCa)) {
+    $_SERVER['MYSQL_ATTR_SSL_CA'] = $tmpCa;
+    $_ENV['MYSQL_ATTR_SSL_CA'] = $tmpCa;
+    putenv("MYSQL_ATTR_SSL_CA=$tmpCa");
+}
+
 // Forward to Laravel
 require __DIR__ . '/../public/index.php';

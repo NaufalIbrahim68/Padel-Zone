@@ -21,7 +21,7 @@
         "DB_DATABASE": "padel_booking",
         "DB_USERNAME": "3h3WoXwQGeyCHpA.root",
         "DB_PASSWORD": "C5fQrTgzG18KGbd1",
-        "MYSQL_ATTR_SSL_CA": "/etc/ssl/certs/ca-certificates.crt",
+        "MYSQL_ATTR_SSL_CA": "/tmp/ca.pem",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_ROUTES_CACHE": "/tmp/routes.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
