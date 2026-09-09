@@ -8,12 +8,37 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyBookingController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+// === TEMPORARY: Database setup routes (remove after first deploy) ===
+Route::get('/setup-database/{token}', function ($token) {
+    if ($token !== 'padel-setup-2024-secret') {
+        abort(403);
+    }
+
+    $output = [];
+
+    try {
+        // Run migrations
+        Artisan::call('migrate', ['--force' => true]);
+        $output[] = 'Migrations: ' . Artisan::output();
+
+        // Run seeders
+        Artisan::call('db:seed', ['--force' => true]);
+        $output[] = 'Seeders: ' . Artisan::output();
+
+        return '<pre>' . implode("\n", $output) . '</pre>';
+    } catch (\Exception $e) {
+        return '<pre>Error: ' . $e->getMessage() . "\n\nTrace:\n" . $e->getTraceAsString() . '</pre>';
+    }
+});
+// === END TEMPORARY ===
 
 // Public pages
 Route::get('/', [HomeController::class, 'index'])->name('home');
