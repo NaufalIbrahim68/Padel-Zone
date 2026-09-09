@@ -8,71 +8,12 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MyBookingController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
-
-// === TEMPORARY: Database setup routes (remove after first deploy) ===
-Route::get('/setup-database/{token}', function ($token) {
-    if ($token !== 'padel-setup-2024-secret') {
-        abort(403);
-    }
-
-    $output = [];
-    $output[] = "PHP Version: " . PHP_VERSION;
-    $output[] = "Loaded Extensions: " . implode(', ', array_filter(['pdo_mysql', 'openssl'], fn($e) => extension_loaded($e)));
-    $output[] = "CA File /tmp/ca.pem exists: " . (file_exists('/tmp/ca.pem') ? 'YES (' . filesize('/tmp/ca.pem') . ' bytes)' : 'NO');
-    $output[] = "CA File database/certs/ca.pem exists: " . (file_exists(base_path('database/certs/ca.pem')) ? 'YES' : 'NO');
-
-    $host = env('DB_HOST');
-    $port = env('DB_PORT', 4000);
-    $user = env('DB_USERNAME');
-    $pass = env('DB_PASSWORD');
-    $dbName = env('DB_DATABASE', 'padel_booking');
-    $caPath = file_exists('/tmp/ca.pem') ? '/tmp/ca.pem' : base_path('database/certs/ca.pem');
-
-    // Step 1: Ensure database exists
-    try {
-        $pdoOptions = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        ];
-        if (file_exists($caPath)) {
-            $pdoOptions[PDO::MYSQL_ATTR_SSL_CA] = $caPath;
-        }
-        if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
-            $pdoOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
-        }
-
-        $pdo = new PDO("mysql:host={$host};port={$port}", $user, $pass, $pdoOptions);
-        $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$dbName}`");
-        $output[] = "Step 1: Database `{$dbName}` verified/created successfully!";
-    } catch (\Exception $e) {
-        $output[] = "Step 1 (Create DB) Warning: " . $e->getMessage();
-    }
-
-    // Step 2: Run migrations
-    try {
-        Artisan::call('migrate', ['--force' => true]);
-        $output[] = "Step 2 (Migrations):\n" . Artisan::output();
-    } catch (\Exception $e) {
-        $output[] = "Step 2 (Migrations) Error: " . $e->getMessage();
-    }
-
-    // Step 3: Run seeders
-    try {
-        Artisan::call('db:seed', ['--force' => true]);
-        $output[] = "Step 3 (Seeders):\n" . Artisan::output();
-    } catch (\Exception $e) {
-        $output[] = "Step 3 (Seeders) Error: " . $e->getMessage();
-    }
-
-    return '<pre>' . implode("\n\n", $output) . '</pre>';
-});
-// === END TEMPORARY ===
 
 // Public pages
 Route::get('/', [HomeController::class, 'index'])->name('home');
