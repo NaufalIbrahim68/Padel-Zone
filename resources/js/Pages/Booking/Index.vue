@@ -197,6 +197,11 @@ const formatDateDisplay = (dateStr) => {
                                 <TimeSlotGrid :slots="slots" :selected-slot="selectedSlot" @select="selectSlot" />
                             </div>
 
+                            <div v-else class="text-center py-8 text-surface-400">
+                                <p class="text-sm">No time slots available for this date.</p>
+                            </div>
+
+
                             <!-- Errors -->
                             <div v-if="errors.start_time" class="mt-3 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
                                 {{ errors.start_time }}

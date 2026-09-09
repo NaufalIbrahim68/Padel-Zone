@@ -22,6 +22,9 @@ Route::get('/courts/{court}', [CourtController::class, 'show'])->name('courts.sh
 Route::get('/pricing', [HomeController::class, 'pricing'])->name('pricing');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
+// Availability API (publicly accessible so users can select slots anytime)
+Route::get('/api/courts/{court}/availability', [AvailabilityController::class, 'show'])->name('availability');
+
 // Authenticated user routes
 Route::middleware('auth')->group(function () {
     // User dashboard
@@ -47,10 +50,8 @@ Route::middleware('auth')->group(function () {
     // My Bookings
     Route::get('/my-bookings', [MyBookingController::class, 'index'])->name('my-bookings');
     Route::patch('/my-bookings/{booking}/cancel', [MyBookingController::class, 'cancel'])->name('my-bookings.cancel');
-
-    // Availability API (uses web middleware for CSRF + auth)
-    Route::get('/api/courts/{court}/availability', [AvailabilityController::class, 'show'])->name('availability');
 });
+
 
 // Admin routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
